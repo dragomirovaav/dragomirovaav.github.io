@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Антонина — прибыль важнее оборота · разбор юнит-экономики и ИИ для селлеров</title>
+<meta name="description" content="Помогаю селлерам маркетплейсов навести порядок в юнит-экономике и внедрить ИИ — так, чтобы каждое решение было про маржу, а не про оборот." />
+<style>
+  :root{
+    --linen:#EFEAE0;
+    --linen-2:#E7E0D2;
+    --greige:#DCD3C2;
+    --greige-2:#D2C7B2;
+    --ink:#2B2622;
+    --ink-soft:#5A5149;
+    --clay:#B5613F;
+    --clay-deep:#9A4E30;
+    --sage:#7E886A;
+    --sage-deep:#5E6650;
+    --thread:#CDC2AD;
+    --paper:#F6F2EA;
+
+    --font-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","URW Palladio L",P052,Georgia,"Times New Roman",serif;
+    --font-body:"Avenir Next","Avenir","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",SFMono-Regular,"JetBrains Mono",Menlo,Consolas,"Liberation Mono",monospace;
+
+    --maxw:1120px;
+    --gutter:clamp(20px,5vw,64px);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+  body{
+    margin:0;
+    background-color:var(--linen);
+    background-image:
+      repeating-linear-gradient(90deg, transparent 0 43px, rgba(160,146,118,.10) 43px 44px),
+      repeating-linear-gradient(0deg,  transparent 0 43px, rgba(160,146,118,.055) 43px 44px);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:clamp(16px,1.05vw,18px);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3{font-family:var(--font-display);font-weight:600;line-height:1.04;margin:0;letter-spacing:-.01em}
+  p{margin:0}
+  a{color:inherit}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--gutter)}
+
+  /* ---------- shared eyebrow / sewn-tag label ---------- */
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:.6em;
+    font-family:var(--font-mono);
+    font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--sage-deep);
+    padding:.4em .85em;
+    background:var(--paper);
+    border:1px dashed var(--thread);
+    border-radius:2px;
+    box-shadow:0 1px 0 rgba(43,38,34,.04);
+  }
+  .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--clay);flex:none}
+
+  /* ---------- header ---------- */
+  .site{position:sticky;top:0;z-index:40;
+    background:color-mix(in srgb, var(--linen) 84%, transparent);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(160,146,118,.28);}
+  .site .row{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{font-family:var(--font-display);font-size:1.28rem;letter-spacing:-.01em;display:flex;align-items:center;gap:.55em;text-decoration:none}
+  .brand .mark{width:26px;height:26px;flex:none}
+  .brand small{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);align-self:center}
+  .nav{display:flex;align-items:center;gap:clamp(14px,2.4vw,34px)}
+  .nav a{font-size:.9rem;text-decoration:none;color:var(--ink-soft);position:relative;padding:.2em 0}
+  .nav a::after{content:"";position:absolute;left:0;right:100%;bottom:-2px;height:1px;background:var(--clay);transition:right .28s ease}
+  .nav a:hover{color:var(--ink)}
+  .nav a:hover::after{right:0}
+  .nav .btn-mini{display:none}
+  @media (max-width:760px){.nav .link{display:none}.nav .btn-mini{display:inline-flex}}
+
+  .btn{
+    --bg:var(--clay-deep);--fg:var(--paper);
+    display:inline-flex;align-items:center;gap:.6em;cursor:pointer;
+    font-family:var(--font-body);font-weight:600;font-size:.98rem;
+    color:var(--fg);background:var(--bg);
+    padding:.82em 1.35em;border:none;border-radius:3px;text-decoration:none;
+    box-shadow:0 1px 0 rgba(43,38,34,.18), inset 0 0 0 1px rgba(255,255,255,.06);
+    transition:transform .18s ease, box-shadow .22s ease, background .22s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px -12px rgba(88,45,25,.6)}
+  .btn:active{transform:translateY(0)}
+  .btn.ghost{--bg:transparent;--fg:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+  .btn.ghost:hover{--bg:rgba(43,38,34,.05);box-shadow:inset 0 0 0 1px var(--ink)}
+  .btn-mini{padding:.55em .9em;font-size:.82rem}
+  .btn .arr{transition:transform .2s ease}
+  .btn:hover .arr{transform:translateX(3px)}
+
+  :focus-visible{outline:2.5px solid var(--sage-deep);outline-offset:3px;border-radius:2px}
+
+  /* ---------- hero ---------- */
+  .hero{padding:clamp(48px,8vw,104px) 0 clamp(40px,6vw,72px)}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(28px,4vw,64px);align-items:center}
+  @media (max-width:900px){.hero-grid{grid-template-columns:1fr;gap:36px}}
+
+  .hero h1{font-size:clamp(2.7rem,7.2vw,5.1rem);margin:.5em 0 .3em}
+  .hero h1 .em{font-style:italic;color:var(--clay-deep)}
+  .hero .lead{font-size:clamp(1.05rem,1.5vw,1.28rem);color:var(--ink-soft);max-width:34ch}
+  .hero .cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:2em}
+  .hero .under{margin-top:1.5em;font-family:var(--font-mono);font-size:.74rem;letter-spacing:.06em;color:var(--ink-soft)}
+  .hero .under b{color:var(--ink);font-weight:600}
+
+  /* ---------- signature: care label ---------- */
+  .care{
+    position:relative;background:var(--paper);
+    border:1px solid var(--greige-2);
+    border-radius:4px;padding:26px 26px 30px;
+    box-shadow:0 26px 50px -34px rgba(43,38,34,.5);
+    transform:rotate(-1.4deg);
+  }
+  .care::before{ /* stitched inner frame */
+    content:"";position:absolute;inset:9px;border:1.5px dashed var(--thread);border-radius:3px;pointer-events:none;
+  }
+  .care::after{ /* hang hole */
+    content:"";position:absolute;top:16px;left:50%;transform:translateX(-50%);
+    width:34px;height:9px;border-radius:9px;background:var(--linen);
+    box-shadow:inset 0 0 0 1.5px var(--greige-2);
+  }
+  .care .care-head{
+    font-family:var(--font-mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--sage-deep);text-align:center;margin:20px 0 18px;position:relative;
+  }
+  .care ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;position:relative}
+  .care li{display:flex;align-items:center;gap:14px}
+  .care li .sym{width:34px;height:34px;flex:none;color:var(--ink)}
+  .care li .txt{font-size:.98rem;line-height:1.3}
+  .care li .txt b{font-family:var(--font-display);font-weight:600}
+  .care .foot{position:relative;margin-top:20px;padding-top:14px;border-top:1px solid var(--greige-2);
+    font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;color:var(--ink-soft);text-transform:uppercase;
+    display:flex;justify-content:space-between}
+
+  /* ---------- generic section ---------- */
+  section{padding:clamp(56px,8vw,104px) 0;position:relative}
+  .band{background:var(--linen-2);border-top:1px solid rgba(160,146,118,.3);border-bottom:1px solid rgba(160,146,118,.3)}
+  .sec-head{max-width:52ch}
+  .sec-head h2{font-size:clamp(1.9rem,3.6vw,3rem);margin:.5em 0 .4em}
+  .sec-head p{color:var(--ink-soft);font-size:1.05rem}
+
+  /* ---------- "если это про тебя" ---------- */
+  .pains{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:44px}
+  @media (max-width:820px){.pains{grid-template-columns:1fr}}
+  .pain{background:var(--paper);border:1px solid var(--greige-2);border-radius:4px;padding:26px 24px;position:relative;overflow:hidden}
+  .pain::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--clay)}
+  .pain .q{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.16em;color:var(--sage-deep);text-transform:uppercase;margin-bottom:12px;display:block}
+  .pain p{font-family:var(--font-display);font-size:1.24rem;line-height:1.24}
+
+  /* ---------- принципы (swatches) ---------- */
+  .about-lead{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,60px);align-items:start}
+  @media (max-width:820px){.about-lead{grid-template-columns:1fr;gap:30px}}
+  .about-lead .big{font-family:var(--font-display);font-size:clamp(1.4rem,2.4vw,1.9rem);line-height:1.28}
+  .about-lead .big .hl{background:linear-gradient(transparent 62%, rgba(126,136,106,.34) 62%)}
+  .principles{display:flex;flex-direction:column;gap:0;margin-top:8px}
+  .principle{display:grid;grid-template-columns:auto 1fr;gap:20px;padding:22px 0;border-top:1px solid var(--greige-2)}
+  .principle:last-child{border-bottom:1px solid var(--greige-2)}
+  .principle .swatch{width:52px;height:52px;border-radius:3px;position:relative;flex:none;box-shadow:inset 0 0 0 1px rgba(43,38,34,.08)}
+  .principle .swatch::after{content:"";position:absolute;inset:6px;border:1px dashed rgba(246,242,234,.5);border-radius:2px}
+  .principle h3{font-size:1.2rem;margin-bottom:.3em}
+  .principle p{color:var(--ink-soft);font-size:.98rem}
+
+  /* ---------- услуги ---------- */
+  .services{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+  @media (max-width:900px){.services{grid-template-columns:1fr}}
+  .svc{
+    background:var(--paper);border:1px solid var(--greige-2);border-radius:5px;
+    padding:30px 26px 28px;position:relative;
+    transition:transform .24s ease, box-shadow .28s ease;
+  }
+  .svc::before{ /* tag hole + string hint */
+    content:"";position:absolute;top:20px;right:22px;width:10px;height:10px;border-radius:50%;
+    background:var(--linen);box-shadow:inset 0 0 0 1.5px var(--greige-2);
+  }
+  .svc:hover{transform:translateY(-5px);box-shadow:0 24px 44px -30px rgba(43,38,34,.55)}
+  .svc .no{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.16em;color:var(--clay-deep)}
+  .svc h3{font-size:1.42rem;margin:14px 0 12px;max-width:14ch}
+  .svc p{color:var(--ink-soft);font-size:.97rem}
+  .svc .tags{margin-top:18px;display:flex;flex-wrap:wrap;gap:7px}
+  .svc .tags span{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.06em;color:var(--sage-deep);
+    border:1px solid var(--thread);border-radius:2px;padding:.3em .55em}
+
+  /* ---------- процесс (numbered, real sequence) ---------- */
+  .steps{margin-top:48px;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--greige-2);border:1px solid var(--greige-2);border-radius:6px;overflow:hidden}
+  @media (max-width:760px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--linen);padding:30px 28px;position:relative}
+  .step .n{font-family:var(--font-mono);font-size:.8rem;letter-spacing:.2em;color:var(--clay-deep)}
+  .step h3{font-size:1.3rem;margin:12px 0 8px}
+  .step p{color:var(--ink-soft);font-size:.96rem}
+  .step .thread-run{position:absolute;left:28px;top:52px;width:20px;height:1px;background:var(--clay);opacity:.4}
+
+  /* ---------- обо мне / команда ---------- */
+  .me{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(30px,4vw,64px);align-items:center}
+  @media (max-width:820px){.me{grid-template-columns:1fr;gap:32px}}
+  .portrait{aspect-ratio:4/5;border-radius:6px;position:relative;overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 20% 15%, rgba(181,97,63,.22), transparent 60%),
+      radial-gradient(120% 90% at 85% 90%, rgba(126,136,106,.28), transparent 55%),
+      linear-gradient(150deg, var(--greige), var(--greige-2));
+    box-shadow:inset 0 0 0 1px rgba(43,38,34,.08);
+    display:flex;align-items:flex-end;padding:24px}
+  .portrait .portrait-img{position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;object-position:48% 12%;transform:scale(1.06);
+    z-index:1}
+  .portrait .cap{position:relative;z-index:3;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);background:var(--paper);padding:.5em .8em;border-radius:2px;border:1px dashed var(--thread)}
+  @media (prefers-reduced-motion:reduce){.portrait .portrait-img{transform:scale(1.16)}}
+  .me h2{font-size:clamp(1.9rem,3.4vw,2.7rem);margin-bottom:.5em}
+  .me p{color:var(--ink-soft);margin-bottom:1em}
+  .me p strong{color:var(--ink);font-weight:600}
+  .team{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+  .team span{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.05em;color:var(--ink);
+    background:var(--paper);border:1px solid var(--greige-2);border-radius:2px;padding:.4em .7em}
+  .team span.ai{color:var(--paper);background:var(--sage-deep);border-color:var(--sage-deep)}
+
+  /* ---------- CTA / form ---------- */
+  .cta-sec{background:var(--ink);color:var(--paper);
+    background-image:repeating-linear-gradient(90deg, transparent 0 43px, rgba(246,242,234,.035) 43px 44px);}
+  .cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,72px);align-items:center}
+  @media (max-width:820px){.cta-grid{grid-template-columns:1fr;gap:34px}}
+  .cta-sec .eyebrow{background:transparent;color:#D9CDB6;border-color:rgba(217,205,182,.4)}
+  .cta-sec h2{color:var(--paper);font-size:clamp(2rem,4vw,3.2rem);margin:.5em 0 .4em}
+  .cta-sec .lead{color:#CFC4B0;max-width:40ch}
+  .form{background:var(--paper);color:var(--ink);border-radius:8px;padding:clamp(24px,3vw,36px);
+    box-shadow:0 40px 70px -40px rgba(0,0,0,.7)}
+  .field{margin-bottom:18px}
+  .field label{display:block;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sage-deep);margin-bottom:7px}
+  .field input,.field select{
+    width:100%;font-family:var(--font-body);font-size:1rem;color:var(--ink);
+    background:var(--linen);border:1px solid var(--greige-2);border-radius:4px;padding:.8em .9em;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .field input:focus,.field select:focus{outline:none;border-color:var(--sage-deep);box-shadow:0 0 0 3px rgba(126,136,106,.22)}
+  .form .btn{width:100%;justify-content:center;margin-top:6px}
+  .form .fineprint{margin-top:14px;font-size:.78rem;color:var(--ink-soft);text-align:center}
+  .form .ok{display:none;text-align:center;padding:14px 0}
+  .form.done .form-body{display:none}
+  .form.done .ok{display:block}
+  .form .ok .chk{width:52px;height:52px;margin:0 auto 14px;color:var(--sage-deep)}
+  .form .ok h3{font-size:1.4rem;margin-bottom:.4em}
+  .form .ok p{color:var(--ink-soft);font-size:.95rem}
+
+  /* ---------- footer ---------- */
+  footer{padding:44px 0;border-top:1px solid rgba(160,146,118,.3)}
+  .foot-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+  .foot-row .b{font-family:var(--font-display);font-size:1.15rem}
+  .foot-row small{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.08em;color:var(--ink-soft)}
+
+  /* ---------- reveal animation ---------- */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal[data-d="1"]{transition-delay:.08s}
+  .reveal[data-d="2"]{transition-delay:.16s}
+  .reveal[data-d="3"]{transition-delay:.24s}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .btn:hover,.svc:hover,.care{transform:none}
+    .care{transform:rotate(-1.4deg)}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== header ===== -->
+<header class="site">
+  <div class="wrap row">
+    <a class="brand" href="#top" aria-label="Антонина — на главную">
+      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="2.5" y="2.5" width="27" height="27" rx="3" stroke="#9A4E30" stroke-width="1.6"/>
+        <path d="M8 8v16M14 8v16M20 8v16M26 8v16" stroke="#7E886A" stroke-width="1.2" opacity=".7"/>
+        <path d="M8 12h18M8 18h18M8 24h18" stroke="#9A4E30" stroke-width="1.4"/>
+      </svg>
+      Антонина <small>юнит-экономика · ии</small>
+    </a>
+    <nav class="nav">
+      <a class="link" href="#tebe">Кому</a>
+      <a class="link" href="#services">Что делаем</a>
+      <a class="link" href="#process">Разбор</a>
+      <a class="link" href="#me">Обо мне</a>
+      <a class="btn btn-mini" href="#zayavka">Записаться</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===== hero ===== -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow reveal">Разбор для селлеров маркетплейсов</span>
+        <h1 class="reveal" data-d="1">Прибыль важнее<br><span class="em">оборота.</span></h1>
+        <p class="lead reveal" data-d="2">Помогаю селлерам WB, Ozon и Яндекс Маркета навести порядок в юнит-экономике и внедрить ИИ — так, чтобы каждое решение было про маржу и управляемость, а не про красивую выручку.</p>
+        <div class="cta-row reveal" data-d="3">
+          <a class="btn" href="#zayavka">Записаться на разбор <span class="arr">→</span></a>
+          <a class="btn ghost" href="#process">Как проходит разбор</a>
+        </div>
+        <p class="under reveal" data-d="3">Практик со <b>своим складом</b> · домашний текстиль · WB / Ozon / Яндекс</p>
+      </div>
+
+      <!-- SIGNATURE: care label -->
+      <div class="reveal" data-d="2">
+        <div class="care" role="img" aria-label="Этикетка по уходу за бизнесом: маржа не ниже 10 процентов, ДРР в своём коридоре, поставки под сезон, финальное решение за вами">
+          <div class="care-head">Этикетка по уходу<br>за бизнесом</div>
+          <ul>
+            <li>
+              <svg class="sym" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 17h28l-2.4 13.5a3 3 0 0 1-3 2.5H11.4a3 3 0 0 1-3-2.5L6 17Z" stroke="currentColor" stroke-width="1.6"/><path d="M11 17c2 3 5 4 9 4s7-1 9-4" stroke="#9A4E30" stroke-width="1.6"/></svg>
+              <span class="txt"><b>Маржа не ниже 10%.</b> Ниже — опасная зона.</span>
+            </li>
+            <li>
+              <svg class="sym" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7 34 32H6L20 7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14.5 27h11" stroke="#7E886A" stroke-width="1.6"/><path d="M20 16v6" stroke="#9A4E30" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span class="txt"><b>ДРР — в своём коридоре.</b> Не «чем меньше», а точно.</span>
+            </li>
+            <li>
+              <svg class="sym" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M7 26c3-7 8-11 15-11 4 0 7 1 11 3l-3 8H8a1 1 0 0 1-1-1v0Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 21c4-1 8-1 12 1" stroke="#7E886A" stroke-width="1.4"/></svg>
+              <span class="txt"><b>Поставки — под сезон.</b> Планировать, а не догонять.</span>
+            </li>
+            <li>
+              <svg class="sym" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="7" y="7" width="26" height="26" rx="3" stroke="currentColor" stroke-width="1.6"/><circle cx="20" cy="20" r="6.5" stroke="#9A4E30" stroke-width="1.6"/><path d="M20 16.5v3.5l2.3 1.4" stroke="#7E886A" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span class="txt"><b>Решает человек.</b> ИИ считает — выбор за тобой.</span>
+            </li>
+          </ul>
+          <div class="foot"><span>100% данные</span><span>0% «воды»</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== кому это ===== -->
+  <section id="tebe" class="band">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Если это про тебя</span>
+        <h2>Оборот растёт. А прибыль?</h2>
+        <p>Три ситуации, в которых разбор окупается быстрее всего.</p>
+      </div>
+      <div class="pains">
+        <div class="pain reveal"><span class="q">Симптом 01</span><p>Обороты растут, а прибыль стоит на месте — или тихо тает.</p></div>
+        <div class="pain reveal" data-d="1"><span class="q">Симптом 02</span><p>Реклама съедает маржу, а где именно утекают деньги — непонятно.</p></div>
+        <div class="pain reveal" data-d="2"><span class="q">Симптом 03</span><p>Хочешь внедрить ИИ, но так, чтобы усилить команду, а не заменить здравый смысл.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== подход / принципы ===== -->
+  <section id="approach">
+    <div class="wrap about-lead">
+      <div class="reveal">
+        <span class="eyebrow">Почему мне можно верить</span>
+        <p class="big" style="margin-top:20px">Я говорю про маржу и ДРР не из учебника. Я так веду <span class="hl">свой склад домашнего текстиля</span> каждый день — закупки, сезон, отгрузки на WB, Ozon и Яндекс.</p>
+      </div>
+      <div class="principles reveal" data-d="1">
+        <div class="principle">
+          <div class="swatch" style="background:var(--clay)"></div>
+          <div><h3>Данные, а не ощущения</h3><p>Рекомендация без цифр — это мнение. Разделяю факты и догадки и честно говорю, чего не знаю.</p></div>
+        </div>
+        <div class="principle">
+          <div class="swatch" style="background:var(--sage)"></div>
+          <div><h3>Прибыль важнее оборота</h3><p>Рост выручки без роста прибыли — не успех. Маржинальность и управляемость важнее объёма.</p></div>
+        </div>
+        <div class="principle">
+          <div class="swatch" style="background:var(--ink)"></div>
+          <div><h3>Решает человек</h3><p>ИИ анализирует и готовит варианты. Финальное слово — всегда за тобой.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== услуги ===== -->
+  <section id="services" class="band">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Что делаем вместе</span>
+        <h2>Три бирки на твоём бизнесе</h2>
+        <p>Начинаем с цифр, наводим порядок в поставках, подключаем ИИ там, где он реально экономит время.</p>
+      </div>
+      <div class="services">
+        <article class="svc reveal">
+          <span class="no">·01 — экономика</span>
+          <h3>Разбор юнит-экономики</h3>
+          <p>PNL по всем маркетплейсам, маржа, ДРР, % выкупа, оборачиваемость. Находим, где именно утекает прибыль — и что с этим делать.</p>
+          <div class="tags"><span>PNL</span><span>маржа</span><span>ДРР</span><span>выкуп</span></div>
+        </article>
+        <article class="svc reveal" data-d="1">
+          <span class="no">·02 — поставки</span>
+          <h3>Планирование под сезон</h3>
+          <p>Ассортимент и остатки под сезонность: лето — охлаждающие и всесезонные, зима — тёплые. Меньше замороженных денег на складе.</p>
+          <div class="tags"><span>сезон</span><span>остатки</span><span>оборачиваемость</span></div>
+        </article>
+        <article class="svc reveal" data-d="2">
+          <span class="no">·03 — ии</span>
+          <h3>Внедрение ИИ-ассистента</h3>
+          <p>Telegram-помощник, который считает метрики 24/7 и готовит решения по отчётам и поставкам. Анализ — на нём, финальное слово — за тобой.</p>
+          <div class="tags"><span>Telegram</span><span>отчёты</span><span>метрики</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== процесс (real sequence → numbering justified) ===== -->
+  <section id="process">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Как проходит разбор</span>
+        <h2>Четыре шага от цифр к прибыли</h2>
+        <p>По одной нити за раз — от честного среза к работающему плану.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal"><span class="n">01</span><h3>Смотрим цифры</h3><p>PNL и метрики по всем маркетплейсам, без прикрас. Сначала факты — потом выводы.</p></div>
+        <div class="step reveal" data-d="1"><span class="n">02</span><h3>Находим утечки</h3><p>Где маржа и ДРР работают против прибыли, какие SKU тянут вниз, что съедает реклама.</p></div>
+        <div class="step reveal" data-d="2"><span class="n">03</span><h3>Собираем план</h3><p>Ассортимент, поставки под сезон, реклама и цены — с привязкой к прибыли и рискам.</p></div>
+        <div class="step reveal" data-d="3"><span class="n">04</span><h3>Подключаем ИИ</h3><p>Ассистент берёт рутину и держит метрики в коридоре, оставляя решения за тобой.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== обо мне / команда ===== -->
+  <section id="me" class="band">
+    <div class="wrap me">
+      <figure class="portrait reveal" style="margin:0">
+        <img class="portrait-img" src="foto.jpg" alt="Антонина — селлер домашнего текстиля, автор разбора юнит-экономики для маркетплейсов" loading="lazy" decoding="async" />
+        <figcaption class="cap">Антонина · селлер, предприниматель</figcaption>
+      </figure>
+      <div class="reveal" data-d="1">
+        <span class="eyebrow">Обо мне и команде</span>
+        <h2>Антонина</h2>
+        <p>Предприниматель и селлер. Много лет продаю домашний текстиль на российских маркетплейсах: <strong>~30 SKU</strong> — одеяла, покрывала, подушки, шторы. Свой склад во Владимире, отгрузки палетами несколько раз в неделю.</p>
+        <p>Я не консультант из презентации. Всё, что предлагаю тебе, работает на моём собственном бизнесе — и рядом со мной уже есть ИИ-ассистент <strong>«Федотик»</strong>, который считает экономику и готовит решения.</p>
+        <div class="team">
+          <span>Операционный координатор</span>
+          <span>Менеджеры МП</span>
+          <span>Руководитель склада</span>
+          <span>Склад · упаковка</span>
+          <span class="ai">◐ ИИ-ассистент «Федотик»</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA / form ===== -->
+  <section id="zayavka" class="cta-sec">
+    <div class="wrap cta-grid">
+      <div class="reveal">
+        <span class="eyebrow">Целевое действие</span>
+        <h2>Запишись на разбор</h2>
+        <p class="lead">Оставь имя и удобный контакт — вернусь с первым срезом по твоей экономике: где прибыль, а где утечки. Без «воды», только цифры и выводы.</p>
+      </div>
+      <div class="reveal" data-d="1">
+        <form class="form" id="leadForm" novalidate>
+          <div class="form-body">
+            <div class="field">
+              <label for="name">Как тебя зовут</label>
+              <input id="name" name="name" type="text" autocomplete="name" placeholder="Имя" required />
+            </div>
+            <div class="field">
+              <label for="contact">Telegram или телефон</label>
+              <input id="contact" name="contact" type="text" autocomplete="tel" placeholder="@username или +7…" required />
+            </div>
+            <div class="field">
+              <label for="mp">Где торгуешь</label>
+              <select id="mp" name="mp">
+                <option value="">Выбери маркетплейс</option>
+                <option>Wildberries</option>
+                <option>Ozon</option>
+                <option>Яндекс Маркет</option>
+                <option>Несколько сразу</option>
+                <option>Только присматриваюсь</option>
+              </select>
+            </div>
+            <button class="btn" type="submit">Записаться на разбор <span class="arr">→</span></button>
+            <p class="fineprint">Отвечаю лично. Данные — только для связи, никуда не передаю.</p>
+          </div>
+          <div class="ok" role="status" aria-live="polite">
+            <svg class="chk" viewBox="0 0 52 52" fill="none" aria-hidden="true"><circle cx="26" cy="26" r="24" stroke="currentColor" stroke-width="2"/><path d="M16 27l7 7 14-15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Готово, записала.</h3>
+            <p>Свяжусь с тобой в ближайшее время и принесу первые наблюдения по твоим цифрам.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-row">
+    <span class="b">Антонина · прибыль важнее оборота</span>
+    <small>Владимир · юнит-экономика маркетплейсов &amp; ИИ · 2026</small>
+  </div>
+</footer>
+
+<script>
+  // scroll reveal
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return;}
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target);} });
+    },{threshold:.14, rootMargin:'0px 0px -8% 0px'});
+    els.forEach(function(e){io.observe(e)});
+  })();
+
+  // lead form — local-only confirmation (no backend on this preview)
+  (function(){
+    var f = document.getElementById('leadForm');
+    f.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      var name = f.querySelector('#name'), contact = f.querySelector('#contact');
+      if(!name.value.trim()){ name.focus(); return; }
+      if(!contact.value.trim()){ contact.focus(); return; }
+      f.classList.add('done');
+      f.scrollIntoView({behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'), block:'center'});
+    });
+  })();
+</script>
+</body>
+</html>
